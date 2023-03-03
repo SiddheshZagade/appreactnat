@@ -14,8 +14,8 @@ const PhotoGallery = () => {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const API_KEY = 'dade5267bbe9cb1369927174d77067cc';
-  const API_SECRET = 'b830c4f30c8ee574';
+  const API_KEY = 'b7a9ec4b6ac9c25552bb6d04ec589e81';
+  const API_SECRET = '4de3c34f3c6f6afb';
   const URL = `https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=${API_KEY}&format=json&nojsoncallback=1&per_page=20`;
 
   useEffect(() => {

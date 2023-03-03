@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import { getPhotos } from '../utils/caching';
-
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, Image } from 'react-native';
+import { getRecentPhotos } from '../utils/api';
 
 const HomePage = ({ navigation }) => {
   const [photos, setPhotos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadPhotos = async () => {
-      const cachedPhotos = await getPhotos();
-      setPhotos(cachedPhotos);
+    const getPhotos = async () => {
+      const data = await getRecentPhotos();
+      setPhotos(data);
       setIsLoading(false);
     };
 
-    loadPhotos();
+    getPhotos();
   }, []);
 
   const renderItem = ({ item }) => (
