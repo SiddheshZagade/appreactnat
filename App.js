@@ -1,23 +1,94 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
+import { getPhotos } from './caching';
 
-import HomePage from './components/HomePage';
-import PhotoGallery from './components/PhotoGallery';
-import LeftNavBar from './components/LeftNavBar';
+export default function App() {
+  const [photos, setPhotos] = useState([]);
 
-const Stack = createStackNavigator();
+  useEffect(() => {
+    const loadPhotos = async () => {
+      const data = await getPhotos();
+      setPhotos(data);
+    };
 
-const App = () => {
+    loadPhotos();
+  }, []);
+
+  const handleRefresh = async () => {
+    const data = await getPhotos(true);
+    setPhotos(data);
+  };
+
+  const renderPhotos = () => {
+    if (photos.length > 0) {
+      return photos.map(photo => (
+        <View key={photo.id} style={styles.photoContainer}>
+          <Image source={{ uri: photo.url }} style={styles.photo} />
+          <Text style={styles.photoTitle}>{photo.title}</Text>
+        </View>
+      ));
+    } else {
+      return <Text>No photos found</Text>;
+    }
+  };
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomePage} />
-        <Stack.Screen name="PhotoGallery" component={PhotoGallery} />
-        <Stack.Screen name="LeftNavBar" component={LeftNavBar} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <View style={styles.container}>
+      <View style={styles.navbar}>
+        <TouchableOpacity style={styles.navItem}>
+          <Text style={styles.navItemText}>Home</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.content}>
+        <View style={styles.buttonContainer}>
+          <Button title="Refresh" onPress={handleRefresh} />
+        </View>
+        {renderPhotos()}
+      </View>
+    </View>
   );
-};
+}
 
-export default App;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  navbar: {
+    backgroundColor: '#f2f2f2',
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  navItem: {
+    marginRight: 10,
+    padding: 10,
+  },
+  navItemText: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#333',
+  },
+  content: {
+    flex: 1,
+    padding: 10,
+    alignItems: 'center',
+  },
+  buttonContainer: {
+    marginBottom: 10,
+  },
+  photoContainer: {
+    marginBottom: 20,
+  },
+  photo: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'cover',
+  },
+  photoTitle: {
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
